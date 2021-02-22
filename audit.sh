@@ -26,7 +26,7 @@ do
 
     # Run prowler
     echo "[$ACCOUNT] Starting prowler"
-    # eval "/Users/ryan/Development/prowler/prowler -p $ACCOUNT -f us-east-1 -q -M html"
+    eval "/Users/ryan/Development/prowler/prowler -p $ACCOUNT -f us-east-1 -q -M html"
 
     # Get a list of all EBS snapshots
     EBS_DATE=$(/usr/local/bin/aws ec2 describe-snapshots --profile ${ACCOUNT} --filters Name=tag:Production,Values=true --query "Snapshots[*].[StartTime]" --output text | sort -n | sed '$!d')
