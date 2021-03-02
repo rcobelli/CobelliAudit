@@ -5,6 +5,26 @@ echo "+-----------------------------------------------------------------+"
 echo "| Quarterly Auditing System"
 echo "+-----------------------------------------------------------------+"
 
+
+echo "+-----------------------------------------------------------------+"
+echo "|          App Deployment Checks"
+echo "+-----------------------------------------------------------------+"
+ls /Users/ryan/Sites/clients | while read ACCOUNT
+do
+    if [ -d "/Users/ryan/Sites/clients/$ACCOUNT/ios" ]
+    then
+
+        eval lastCommit=$(git --git-dir /Users/ryan/Sites/clients/$ACCOUNT/ios/.git log -1 --format=%ct)
+        diff=$(($(date +'%s') - $lastCommit))
+
+        if [ $diff -gt 15552000 ]
+        then
+            echo "[$ACCOUNT][ERROR] App hasn't been updated in the last 6 months"
+        fi
+
+    fi
+done
+
 echo "+-----------------------------------------------------------------+"
 echo "|     Starting AWS Accounts"
 echo "+-----------------------------------------------------------------+"
@@ -61,8 +81,6 @@ do
         fi
     done
 done
-
-exit(0)
 
 
 echo "+-----------------------------------------------------------------+"
