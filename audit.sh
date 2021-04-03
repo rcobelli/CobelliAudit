@@ -44,10 +44,6 @@ do
         echo "[$ACCOUNT] Access keys are newer than 2 days"
     fi
 
-    # Run prowler
-    echo "[$ACCOUNT] Starting prowler"
-    eval "/Users/ryan/Development/prowler/prowler -p $ACCOUNT -f us-east-1 -q -M html"
-
     # Get a list of all EBS snapshots
     EBS_DATE=$(/usr/local/bin/aws ec2 describe-snapshots --profile ${ACCOUNT} --filters Name=tag:Production,Values=true --query "Snapshots[*].[StartTime]" --output text | sort -n | sed '$!d')
     if [ $(expr $(date "+%Y%m%d") - $(echo $EBS_DATE | cut -c1-4,6-7,9-10)) -gt 2 ]
@@ -80,6 +76,10 @@ do
             echo "[${ACCOUNT}][${BUCKET_NAME}] MySQL backups are working"
         fi
     done
+
+    # Run prowler
+    echo "[$ACCOUNT] Starting prowler"
+    eval "/Users/ryan/Development/scripting/prowler/prowler -p $ACCOUNT -f us-east-1 -q -M html"
 done
 
 
@@ -103,7 +103,9 @@ echo "+-----------------------------------------------------------------+"
 echo "|     Checking Source for Credential Leaks"
 echo "+-----------------------------------------------------------------+"
 
+echo "Starting clients credentials scan..."
 eval "/usr/local/bin/gitleaks --no-git -q --path=/Users/ryan/Sites/clients/ --report=/Users/ryan/Desktop/clients.json > /dev/null 2>&1"
 echo "Completed clients credentials scan"
+echo "Starting personal credentials scan..."
 eval "/usr/local/bin/gitleaks --no-git -q --path=/Users/ryan/Sites/personal/ --report=/Users/ryan/Desktop/personal.json > /dev/null 2>&1"
 echo "Completed personal credentials scan"
