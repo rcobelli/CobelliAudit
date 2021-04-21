@@ -11,6 +11,7 @@ echo "|          App Deployment Checks"
 echo "+-----------------------------------------------------------------+"
 ls /Users/ryan/Sites/clients | while read ACCOUNT
 do
+    # Check if iOS has been updated in the last 6 months
     if [ -d "/Users/ryan/Sites/clients/$ACCOUNT/ios" ]
     then
 
@@ -20,6 +21,32 @@ do
         if [ $diff -gt 15552000 ]
         then
             echo "[$ACCOUNT][ERROR] App hasn't been updated in the last 6 months"
+        fi
+
+    fi
+
+    # Check if there are commits (changes) since the last tag (release)
+    if [ -d "/Users/ryan/Sites/clients/$ACCOUNT/ios" ]
+    then
+
+        recentCommitCount=$(/usr/bin/git -C /Users/ryan/Sites/clients/$ACCOUNT/ios log $(/usr/bin/git -C /Users/ryan/Sites/clients/$ACCOUNT/ios describe --tags --abbrev=0 )..HEAD --oneline | wc -l)
+
+        if [ $recentCommitCount -gt 0 ]
+        then
+            echo "[$ACCOUNT][iOS][ERROR] App has unpublished changes"
+        fi
+
+    fi
+
+    # Check if there are commits (changes) since the last tag (release)
+    if [ -d "/Users/ryan/Sites/clients/$ACCOUNT/android" ]
+    then
+
+        recentCommitCount=$(/usr/bin/git -C /Users/ryan/Sites/clients/$ACCOUNT/android log $(/usr/bin/git -C /Users/ryan/Sites/clients/$ACCOUNT/android describe --tags --abbrev=0 )..HEAD --oneline | wc -l)
+
+        if [ $recentCommitCount -gt 0 ]
+        then
+            echo "[$ACCOUNT][Android][ERROR] App has unpublished changes"
         fi
 
     fi
