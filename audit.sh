@@ -20,7 +20,7 @@ do
 
         if [ $diff -gt 15552000 ]
         then
-            echo "[$ACCOUNT][ERROR] App hasn't been updated in the last 6 months"
+            echo "[$ACCOUNT][iOS][ERROR] App hasn't been updated in the last 6 months"
         fi
 
     fi
@@ -34,6 +34,33 @@ do
         if [ $recentCommitCount -gt 0 ]
         then
             echo "[$ACCOUNT][iOS][ERROR] App has unpublished changes"
+        fi
+
+    fi
+
+    # Check if Pods have been updated in the last quarter
+    if [ -f "/Users/ryan/Sites/clients/$ACCOUNT/ios/Podfile.lock" ]
+    then
+
+        lastEdit=$(stat -f "%m" "/Users/ryan/Sites/clients/$ACCOUNT/ios/Podfile.lock")
+        diff=$(($(date +'%s') - $lastEdit))
+
+        if [ $diff -gt 7776000 ]
+        then
+            echo "[$ACCOUNT][iOS][ERROR] Pods haven't been updated in the last 3 months"
+        fi
+    fi
+
+    # Check if Android has been updated in the last 6 months
+    if [ -d "/Users/ryan/Sites/clients/$ACCOUNT/android" ]
+    then
+
+        eval lastCommit=$(git --git-dir /Users/ryan/Sites/clients/$ACCOUNT/android/.git log -1 --format=%ct)
+        diff=$(($(date +'%s') - $lastCommit))
+
+        if [ $diff -gt 15552000 ]
+        then
+            echo "[$ACCOUNT][Android][ERROR] App hasn't been updated in the last 6 months"
         fi
 
     fi
